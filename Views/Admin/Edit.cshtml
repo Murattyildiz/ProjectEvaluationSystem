@@ -1,0 +1,433 @@
+@model ProjectEvaluationSystem.Models.Project
+
+@{
+    ViewData["Title"] = "Proje Düzenle";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <style>
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .image-preview-item {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-preview-item .remove-preview {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .existing-image {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .existing-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .existing-image .badge {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 3px;
+            font-size: 10px;
+            background-color: rgba(0,0,0,0.6);
+        }
+        
+        .existing-image .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .dropzone {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 30px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .dropzone:hover, .dropzone.drag-over {
+            background: #e9ecef;
+            border-color: #007bff;
+        }
+        
+        .dropzone .dz-message {
+            margin: 0;
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="bi bi-pencil-square"></i> Proje Düzenle</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-section p-3 mb-4 bg-light rounded">
+                                    <h5 class="border-start border-primary border-4 ps-2 mb-4">Proje Bilgileri</h5>
+                                    
+                                    <div class="mb-3">
+                                        <label asp-for="Name" class="form-label">Proje Adı</label>
+                                        <input asp-for="Name" class="form-control" placeholder="Projenin adını girin" />
+                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label asp-for="Description" class="form-label">Proje Açıklaması</label>
+                                        <textarea asp-for="Description" class="form-control" rows="5" placeholder="Projenin ayrıntılı açıklamasını girin"></textarea>
+                                        <span asp-validation-for="Description" class="text-danger"></span>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label asp-for="GithubLink" class="form-label">GitHub Linki</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-github"></i></span>
+                                            <input asp-for="GithubLink" class="form-control" placeholder="https://github.com/kullanici/proje" />
+                                        </div>
+                                        <span asp-validation-for="GithubLink" class="text-danger"></span>
+                                        <small class="text-muted">Projenin GitHub sayfasının linkini ekleyin (isteğe bağlı)</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-section p-3 mb-4 bg-light rounded">
+                                    <h5 class="border-start border-primary border-4 ps-2 mb-4">Proje Görselleri</h5>
+                                    
+                                    <div class="mb-3">
+                                        <h6 class="mb-3">Mevcut Görseller</h6>
+                                        
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @if (Model.ProjectImages != null && Model.ProjectImages.Any())
+                                            {
+                                                @foreach(var image in Model.ProjectImages)
+                                                {
+                                                    <div class="existing-image">
+                                                        <img src="@image.ImagePath" alt="Proje Görseli" />
+                                                        @if (image.IsMainImage)
+                                                        {
+                                                            <span class="badge w-100 text-center">Ana Görsel</span>
+                                                        }
+                                                        <button type="button" class="remove-image" data-image-id="@image.Id" title="Kaldır">&times;</button>
+                                                        <input type="hidden" name="imageIdsToDelete" value="@image.Id" disabled class="image-delete-input" />
+                                                    </div>
+                                                }
+                                            }
+                                            else if (!string.IsNullOrEmpty(Model.ImagePath))
+                                            {
+                                                <div class="existing-image">
+                                                    <img src="@Model.ImagePath" alt="@Model.Name" />
+                                                    <span class="badge w-100 text-center">Ana Görsel</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="alert alert-info w-100">
+                                                    <i class="bi bi-info-circle me-2"></i> Henüz görsel eklenmemiş
+                                                </div>
+                                            }
+                                        </div>
+                                        
+                                        <hr class="my-3" />
+                                        
+                                        <h6 class="mb-3">Yeni Görsel Ekle</h6>
+                                        
+                                        <div class="dropzone" id="imageDropzone">
+                                            <div class="dz-message">
+                                                <i class="bi bi-cloud-arrow-up text-primary" style="font-size: 2rem;"></i>
+                                                <p class="mt-2">Görselleri buraya sürükleyin veya seçmek için tıklayın</p>
+                                                <p class="text-muted small">Birden fazla görsel yükleyebilirsiniz</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <input type="file" name="projectImages" id="projectImages" class="d-none" accept="image/*" multiple />
+                                        
+                                        <div class="image-preview-container" id="imagePreviewContainer">
+                                            <!-- Buraya önizleme alanları dinamik olarak eklenecek -->
+                                        </div>
+                                        
+                                        <small class="text-muted d-block mt-2">Yeni bir fotoğraf seçmediğiniz sürece mevcut fotoğraflar korunacaktır. Tüm görseller Cloudinary üzerinde saklanmaktadır.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section p-3 mb-4 bg-light rounded">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="border-start border-primary border-4 ps-2 mb-0">Katkıda Bulunanlar</h5>
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="addContributor">
+                                    <i class="bi bi-person-plus-fill"></i> Yeni Ekle
+                                </button>
+                            </div>
+                            
+                            <div id="contributorsContainer">
+                                @if (Model.Contributors != null && Model.Contributors.Any())
+                                {
+                                    foreach (var contributor in Model.Contributors)
+                                    {
+                                        <div class="contributor-form p-3 mb-3 border rounded bg-white">
+                                            <input type="hidden" name="contributorIds" value="@contributor.Id" />
+                                            <div class="row">
+                                                <div class="col-md-4 mb-2">
+                                                    <label class="form-label">Ad</label>
+                                                    <input type="text" name="contributorFirstName" class="form-control" value="@contributor.FirstName" placeholder="Ad" />
+                                                </div>
+                                                <div class="col-md-4 mb-2">
+                                                    <label class="form-label">Soyad</label>
+                                                    <input type="text" name="contributorLastName" class="form-control" value="@contributor.LastName" placeholder="Soyad" />
+                                                </div>
+                                                <div class="col-md-4 mb-2">
+                                                    <label class="form-label">E-posta</label>
+                                                    <input type="email" name="contributorEmail" class="form-control" value="@contributor.Email" placeholder="ornek@mail.com" />
+                                                    <small class="text-muted">Değerlendirme sonuçları bu adrese gönderilecektir</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="contributor-form p-3 mb-3 border rounded bg-white">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-2">
+                                                <label class="form-label">Ad</label>
+                                                <input type="text" name="contributorFirstName" class="form-control" placeholder="Ad" />
+                                            </div>
+                                            <div class="col-md-4 mb-2">
+                                                <label class="form-label">Soyad</label>
+                                                <input type="text" name="contributorLastName" class="form-control" placeholder="Soyad" />
+                                            </div>
+                                            <div class="col-md-4 mb-2">
+                                                <label class="form-label">E-posta</label>
+                                                <input type="email" name="contributorEmail" class="form-control" placeholder="ornek@mail.com" />
+                                                <small class="text-muted">Değerlendirme sonuçları bu adrese gönderilecektir</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="text-end mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                                <i class="bi bi-arrow-left"></i> İptal
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Görsel yükleme ve önizleme işlemleri
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropzone = document.getElementById('imageDropzone');
+            const fileInput = document.getElementById('projectImages');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            
+            // Mevcut görselleri silme işlemi
+            document.querySelectorAll('.remove-image').forEach(button => {
+                button.addEventListener('click', function() {
+                    const imageId = this.getAttribute('data-image-id');
+                    const parentElement = this.parentNode;
+                    const deleteInput = parentElement.querySelector('.image-delete-input');
+            
+                    if (confirm('Bu görseli silmek istediğinizden emin misiniz?')) {
+                        parentElement.style.opacity = '0.5';
+                        deleteInput.disabled = false; // Artık form gönderildiğinde bu ID silinecek
+                    }
+                });
+            });
+            
+            // Dropzone tıklandığında dosya seçiciyi aç
+            dropzone.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // Sürükle & bırak olayları
+            dropzone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dropzone.classList.add('drag-over');
+            });
+            
+            dropzone.addEventListener('dragleave', function() {
+                dropzone.classList.remove('drag-over');
+            });
+            
+            dropzone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dropzone.classList.remove('drag-over');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    handleFileSelect(files);
+                }
+            });
+            
+            // Dosya seçildiğinde
+            fileInput.addEventListener('change', function() {
+                handleFileSelect(this.files);
+            });
+            
+            // Dosya seçimi işleme
+            function handleFileSelect(files) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (!file.type.match('image.*')) {
+                        continue;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = (function(file) {
+                        return function(e) {
+                            // Önizleme oluştur
+                            createImagePreview(e.target.result, file.name);
+                        };
+                    })(file);
+                    
+                reader.readAsDataURL(file);
+            }
+        }
+            
+            // Önizleme oluştur
+            function createImagePreview(dataUrl, fileName) {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'image-preview-item';
+                previewItem.innerHTML = `
+                    <img src="${dataUrl}" alt="${fileName}" title="${fileName}">
+                    <button type="button" class="remove-preview" title="Kaldır">&times;</button>
+                `;
+                
+                previewContainer.appendChild(previewItem);
+                
+                // Kaldırma butonuna işlev ekle
+                previewItem.querySelector('.remove-preview').addEventListener('click', function() {
+                    previewItem.remove();
+                });
+            }
+        });
+    
+        // Yeni katkıda bulunan ekleme
+        document.getElementById('addContributor').addEventListener('click', function() {
+            const container = document.getElementById('contributorsContainer');
+            const newContributor = document.createElement('div');
+            newContributor.className = 'contributor-form p-3 mb-3 border rounded bg-white';
+            newContributor.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0"><i class="bi bi-person"></i> Yeni Katkıda Bulunan</h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-contributor">
+                        <i class="bi bi-trash"></i> Sil
+                    </button>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">Ad</label>
+                        <input type="text" name="contributorFirstName" class="form-control" placeholder="Ad" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">Soyad</label>
+                        <input type="text" name="contributorLastName" class="form-control" placeholder="Soyad" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">E-posta</label>
+                        <input type="email" name="contributorEmail" class="form-control" placeholder="ornek@mail.com" />
+                        <small class="text-muted">Değerlendirme sonuçları bu adrese gönderilecektir</small>
+                    </div>
+                </div>
+            `;
+            container.appendChild(newContributor);
+            
+            // Silme işlevi ekle
+            newContributor.querySelector('.remove-contributor').addEventListener('click', function() {
+                container.removeChild(newContributor);
+            });
+        });
+        
+        // Mevcut katkıda bulunanlar için silme butonlarını ekle
+        document.addEventListener('DOMContentLoaded', function() {
+            const contributorForms = document.querySelectorAll('.contributor-form');
+            contributorForms.forEach(function(form, index) {
+                // İlk form hariç hepsine silme butonu ekle
+                if (index > 0 || contributorForms.length > 1) {
+                    if (!form.querySelector('.remove-contributor')) {
+                        const headerDiv = document.createElement('div');
+                        headerDiv.className = 'd-flex justify-content-between align-items-center mb-2';
+                        headerDiv.innerHTML = `
+                            <h6 class="mb-0"><i class="bi bi-person"></i> Katkıda Bulunan</h6>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-contributor">
+                                <i class="bi bi-trash"></i> Sil
+                            </button>
+                        `;
+                        
+                        form.insertBefore(headerDiv, form.firstChild);
+                        
+                        headerDiv.querySelector('.remove-contributor').addEventListener('click', function() {
+                            form.remove();
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+} 

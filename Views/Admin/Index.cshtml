@@ -1,0 +1,274 @@
+@model IEnumerable<ProjectEvaluationSystem.Models.Project>
+
+@{
+    ViewData["Title"] = "Admin Panel";
+    var totalProjects = Model.Count();
+    var totalEvaluations = ViewBag.TotalEvaluations ?? 0;
+    var totalContributors = ViewBag.TotalContributors ?? 0;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+}
+
+<div class="admin-layout">
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-logo">
+                <i class="bi bi-shield-lock"></i>
+                <span class="sidebar-text">Admin Panel</span>
+            </a>
+            <button class="sidebar-toggle">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="sidebar-heading">Ana Menü</div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="@Url.Action("Dashboard", "Admin")" class="sidebar-link">
+                        <i class="bi bi-speedometer2"></i>
+                        <span class="sidebar-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="@Url.Action("Projects", "Admin")" class="sidebar-link">
+                        <i class="bi bi-folder"></i>
+                        <span class="sidebar-text">Projeler</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="@Url.Action("ViewEvaluations", "Admin")" class="sidebar-link">
+                        <i class="bi bi-star"></i>
+                        <span class="sidebar-text">Değerlendirmeler</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="@Url.Action("Contributors", "Admin")" class="sidebar-link">
+                        <i class="bi bi-people"></i>
+                        <span class="sidebar-text">Katkıda Bulunanlar</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-heading">İşlemler</div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="@Url.Action("Create", "Admin")" class="sidebar-link">
+                        <i class="bi bi-plus-circle"></i>
+                        <span class="sidebar-text">Yeni Proje</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-content">
+        <!-- Header -->
+        <div class="admin-header">
+            <div class="header-left">
+                <button class="mobile-toggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h4 class="mb-0">Hoş Geldiniz, Admin</h4>
+            </div>
+            <div class="header-right">
+                <div class="admin-user">
+                    <div class="user-avatar">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <span class="user-name d-none d-md-inline">Admin</span>
+                </div>
+                <a href="@Url.Action("Logout", "Admin")" class="header-action" title="Çıkış Yap">
+                    <i class="bi bi-box-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="admin-main p-4">
+            <!-- İstatistik Kartları -->
+            <div class="admin-cards mb-4">
+                <div class="admin-card">
+                    <div class="admin-card-body">
+                        <div class="admin-card-icon icon-primary">
+                            <i class="bi bi-folder"></i>
+                        </div>
+                        <div class="admin-card-content">
+                            <div class="admin-card-value">@totalProjects</div>
+                            <div class="admin-card-label">Toplam Proje</div>
+                        </div>
+                        <a href="@Url.Action("Projects", "Admin")" class="stretched-link"></a>
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <div class="admin-card-body">
+                        <div class="admin-card-icon icon-success">
+                            <i class="bi bi-star"></i>
+                        </div>
+                        <div class="admin-card-content">
+                            <div class="admin-card-value">@totalEvaluations</div>
+                            <div class="admin-card-label">Değerlendirme</div>
+                        </div>
+                        <a href="@Url.Action("ViewEvaluations", "Admin")" class="stretched-link"></a>
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <div class="admin-card-body">
+                        <div class="admin-card-icon icon-warning">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="admin-card-content">
+                            <div class="admin-card-value">@totalContributors</div>
+                            <div class="admin-card-label">Katkıda Bulunan</div>
+                        </div>
+                        <a href="@Url.Action("Contributors", "Admin")" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Son Projeler Tablosu -->
+            <div class="admin-table-wrapper">
+                <div class="admin-table-header">
+                    <h5 class="admin-table-title">Son Eklenen Projeler</h5>
+                    <div class="d-flex gap-2">
+                        <a href="@Url.Action("Create", "Admin")" class="btn-admin btn-admin-primary">
+                            <i class="bi bi-plus-circle"></i> Yeni Proje
+                        </a>
+                        <a href="@Url.Action("Projects", "Admin")" class="btn-admin btn-admin-light">
+                            <i class="bi bi-list"></i> Tüm Projeler
+                        </a>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Proje Adı</th>
+                                <th>Oluşturulma Tarihi</th>
+                                <th>Değerlendirmeler</th>
+                                <th>Katkıda Bulunanlar</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var project in Model.OrderByDescending(p => p.CreatedDate).Take(5))
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-folder-fill text-primary me-2"></i>
+                                            <span>@project.Name</span>
+                                        </div>
+                                    </td>
+                                    <td>@project.CreatedDate.ToString("dd.MM.yyyy")</td>
+                                    <td>
+                                        <span class="badge badge-success">
+                                            @(ViewBag.ProjectEvaluations?[project.Id] ?? 0)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-primary">
+                                            @(ViewBag.ProjectContributors?[project.Id] ?? 0)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <a href="@Url.Action("Edit", "Admin", new { id = project.Id })" 
+                                               class="btn-action btn-edit" title="Düzenle">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="@Url.Action("ViewEvaluations", "Admin", new { projectId = project.Id })" 
+                                               class="btn-action btn-view" title="Değerlendirmeleri Görüntüle">
+                                                <i class="bi bi-star"></i>
+                                            </a>
+                                            <a href="@Url.Action("Delete", "Admin", new { id = project.Id })" 
+                                               class="btn-action btn-delete" title="Sil">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.body;
+            const sidebar = document.querySelector('.admin-sidebar');
+            const content = document.querySelector('.admin-content');
+            const toggleBtns = document.querySelectorAll('.sidebar-toggle, .mobile-toggle');
+            
+            // Overlay oluştur
+            const overlay = document.createElement('div');
+            overlay.className = 'sidebar-overlay';
+            document.body.appendChild(overlay);
+            
+            // Sidebar toggle işlevi
+            function toggleSidebar() {
+                sidebar.classList.toggle('collapsed');
+                content.classList.toggle('expanded');
+                
+                if (window.innerWidth <= 992) {
+                    overlay.classList.toggle('active');
+                    body.classList.toggle('sidebar-open');
+                }
+            }
+            
+            // Toggle butonlarına tıklama olayı ekle
+            toggleBtns.forEach(btn => {
+                btn.addEventListener('click', toggleSidebar);
+            });
+            
+            // Overlay'a tıklama olayı ekle
+            overlay.addEventListener('click', toggleSidebar);
+            
+            // Responsive davranış
+            function checkWidth() {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.remove('collapsed');
+                    content.classList.remove('expanded');
+                    overlay.classList.remove('active');
+                    body.classList.remove('sidebar-open');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    content.classList.remove('expanded');
+                    overlay.classList.remove('active');
+                    body.classList.remove('sidebar-open');
+                }
+            }
+            
+            // Sayfa yüklendiğinde ve pencere boyutu değiştiğinde kontrol et
+            checkWidth();
+            window.addEventListener('resize', checkWidth);
+            
+            // Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
+            tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Aktif menü öğesini işaretle
+            const currentPath = window.location.pathname.toLowerCase();
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                const href = link.getAttribute('href').toLowerCase();
+                if (currentPath === href || currentPath.startsWith(href)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+} 

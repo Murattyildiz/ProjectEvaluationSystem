@@ -1,0 +1,137 @@
+@{
+    ViewData["Title"] = "Admin Girişi";
+    Layout = "_LoginLayout"; // Özel bir layout kullanacağız
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <style>
+        .system-title {
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 1.8rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 8px 15px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .login-logo {
+            width: 180px;
+            height: auto;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .login-box {
+            text-align: center;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+    </style>
+}
+
+<div class="login-container">
+    <div class="login-box">
+        <div class="text-center mb-4">
+            <img src="~/images/Logo.png" alt="Bingöl Üniversitesi Logo" class="login-logo mb-3">
+            <h2 class="system-title fw-bold">Proje Değerlendirme Sistemi</h2>
+            <p class="text-muted">Admin Paneli</p>
+        </div>
+        
+        <div class="card shadow animate__animated animate__fadeIn">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-3">
+                    <i class="bi bi-shield-lock"></i> Admin Girişi
+                </h3>
+                
+                @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.ErrorMessage
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                
+                <form asp-action="Login" method="post" class="needs-validation" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Kullanıcı Adı</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-white"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" name="username" class="form-control" placeholder="Kullanıcı adınızı girin" required autofocus />
+                            <div class="invalid-feedback">Kullanıcı adı gereklidir</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Şifre</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-white"><i class="bi bi-key-fill"></i></span>
+                            <input type="password" name="password" id="password" class="form-control" placeholder="Şifrenizi girin" required />
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <div class="invalid-feedback">Şifre gereklidir</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe">
+                        <label class="form-check-label" for="rememberMe">
+                            Beni hatırla
+                        </label>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
+                        </button>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-house-door-fill"></i> Ana Sayfaya Dön
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4 text-muted">
+            <small>&copy; @DateTime.Now.Year - Proje Değerlendirme Sistemi</small>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Şifre göster/gizle fonksiyonu
+            const togglePassword = document.querySelector('#togglePassword');
+            const password = document.querySelector('#password');
+
+            togglePassword.addEventListener('click', function() {
+                // Şifre göster/gizle
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                
+                // İkonu değiştir
+                this.querySelector('i').classList.toggle('bi-eye');
+                this.querySelector('i').classList.toggle('bi-eye-slash');
+            });
+            
+            // Form doğrulama
+            const forms = document.querySelectorAll('.needs-validation');
+            
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        });
+    </script>
+} 

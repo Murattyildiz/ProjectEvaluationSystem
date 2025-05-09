@@ -1,0 +1,141 @@
+@model ProjectEvaluationSystem.Models.Project
+
+@{
+    ViewData["Title"] = "Proje Sil";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0"><i class="bi bi-exclamation-triangle-fill"></i> Projeyi Silmeyi Onaylayın</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-circle-fill fs-3 me-2"></i>
+                            <div>
+                                <h5 class="alert-heading mb-1">Dikkat!</h5>
+                                <p class="mb-0">Bu işlem geri alınamaz. Proje ve ilgili tüm veriler (değerlendirmeler, katkıda bulunanlar, görseller vb.) kalıcı olarak silinecektir.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-7">
+                            <div class="p-3 bg-light rounded">
+                                <h4 class="text-primary mb-3">@Model.Name</h4>
+                                
+                                <div class="mb-3">
+                                    <h6 class="text-muted"><i class="bi bi-calendar3"></i> Oluşturma Tarihi</h6>
+                                    <p>@Model.CreatedDate.ToString("dd MMMM yyyy, HH:mm")</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6 class="text-muted"><i class="bi bi-star"></i> Değerlendirme</h6>
+                                    <div class="rating-stars">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= Math.Round(Model.AverageRating))
+                                            {
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                            }
+                                            else if (i - 0.5 <= Model.AverageRating)
+                                            {
+                                                <i class="bi bi-star-half text-warning"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-star text-warning"></i>
+                                            }
+                                        }
+                                        <span class="ms-1">
+                                            @Model.AverageRating.ToString("F1") / 5.0
+                                            (@(Model.Evaluations?.Count ?? 0) değerlendirme)
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                @if (!string.IsNullOrEmpty(Model.GithubLink))
+                                {
+                                    <div class="mb-3">
+                                        <h6 class="text-muted"><i class="bi bi-github"></i> GitHub</h6>
+                                        <a href="@Model.GithubLink" target="_blank" class="text-break">@Model.GithubLink</a>
+                                    </div>
+                                }
+                                
+                                <div class="mb-3">
+                                    <h6 class="text-muted"><i class="bi bi-people"></i> Katkıda Bulunanlar</h6>
+                                    @if (Model.Contributors != null && Model.Contributors.Any())
+                                    {
+                                        <div class="list-group">
+                                            @foreach (var contributor in Model.Contributors)
+                                            {
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <h6 class="mb-0">@contributor.FirstName @contributor.LastName</h6>
+                                                            <small class="text-muted">
+                                                                @if (!string.IsNullOrEmpty(contributor.Email))
+                                                                {
+                                                                    <i class="bi bi-envelope"></i> @contributor.Email
+                                                                }
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="fst-italic text-muted">Katkıda bulunan kişi bilgisi bulunmamaktadır.</p>
+                                    }
+                                </div>
+                                
+                                <div>
+                                    <h6 class="text-muted"><i class="bi bi-file-earmark-text"></i> Açıklama</h6>
+                                    <p>@Model.Description</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="text-center">
+                                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                                {
+                                    <img src="@Model.ImagePath" class="img-fluid rounded shadow-sm" alt="@Model.Name" />
+                                }
+                                else
+                                {
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 250px;">
+                                        <div class="text-center">
+                                            <i class="bi bi-image text-secondary" style="font-size: 4rem;"></i>
+                                            <p class="mt-2 text-muted">Görsel yok</p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="text-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                                <i class="bi bi-arrow-left"></i> İptal Et
+                            </a>
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Bu projeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')">
+                                <i class="bi bi-trash"></i> Projeyi Sil
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

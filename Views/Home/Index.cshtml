@@ -1,0 +1,240 @@
+﻿@model IEnumerable<ProjectEvaluationSystem.Models.Project>
+
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <style>
+        .university-logo {
+            width: 140px;
+            height: auto;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            transition: transform 0.3s ease;
+        }
+
+        .university-logo:hover {
+            transform: scale(1.05);
+        }
+    </style>
+    <!-- CSS doğru şekilde yüklendiğini kontrol et -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Home CSS yüklendi');
+            // CSS dosyalarını kontrol et
+            let loaded = false;
+            for (let i = 0; i < document.styleSheets.length; i++) {
+                if (document.styleSheets[i].href && document.styleSheets[i].href.includes('home.css')) {
+                    console.log('Home CSS başarıyla yüklendi');
+                    loaded = true;
+                    break;
+                }
+            }
+            if (!loaded) {
+                console.error('Home CSS yüklenemedi!');
+            }
+        });
+    </script>
+}
+
+<div class="container-fluid py-4">
+    <div class="hero-section text-center mb-5 p-4 rounded animate__animated animate__fadeIn">
+        <img src="~/images/Logo.png" alt="Bingöl Üniversitesi Logo" class="university-logo mb-4">
+        <h1 class="display-4 fw-bold text-primary">Proje Değerlendirme Sistemi</h1>
+        <p class="lead">Aşağıdaki projeleri inceleyebilir ve değerlendirebilirsiniz</p>
+        
+        @if (!string.IsNullOrEmpty(ViewBag.UserFirstName) && !string.IsNullOrEmpty(ViewBag.UserLastName))
+        {
+            <div class="alert alert-info mt-3 animate__animated animate__fadeIn">
+                <i class="bi bi-person-check-fill me-2"></i> <strong>@ViewBag.UserFirstName @ViewBag.UserLastName</strong> olarak giriş yaptınız.
+                <form asp-action="ClearUserInfo" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary ms-2">Temizle</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="user-info-form bg-white p-4 mt-3 rounded shadow-sm animate__animated animate__fadeIn">
+                <h5 class="mb-3 d-flex align-items-center text-primary animate__animated animate__pulse">
+                    <i class="bi bi-person-circle me-2 fs-4"></i> 
+                    <span>Bilgilerinizi Girin</span>
+                </h5>
+                
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger animate__animated animate__fadeIn">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                    </div>
+                }
+                
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success animate__animated animate__fadeIn">
+                        <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                    </div>
+                }
+                
+                <form asp-action="SaveUserInfo" method="post" class="row g-3 needs-validation" novalidate>
+                    <div class="col-md-5">
+                        <div class="input-group has-validation">
+                            <span class="input-group-text bg-primary text-white"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" name="FirstName" class="form-control border-start-0" 
+                                placeholder="Adınız" required style="border-radius: 0 0.375rem 0.375rem 0;" />
+                            <div class="invalid-feedback">Lütfen adınızı girin</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="input-group has-validation">
+                            <span class="input-group-text bg-primary text-white"><i class="bi bi-person-badge-fill"></i></span>
+                            <input type="text" name="LastName" class="form-control border-start-0" 
+                                placeholder="Soyadınız" required style="border-radius: 0 0.375rem 0.375rem 0;" />
+                            <div class="invalid-feedback">Lütfen soyadınızı girin</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-check-circle-fill me-2"></i>Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center animate__animated animate__fadeIn">
+            <h4><i class="bi bi-info-circle-fill"></i> Henüz hiç proje eklenmemiş.</h4>
+            <p>Admin panelinden yeni projeler ekleyebilirsiniz.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            @foreach (var project in Model.OrderByDescending(p => p.CreatedDate))
+            {
+                <div class="col">
+                    <div class="card h-100 project-card shadow-sm">
+                        @if (project.ProjectImages != null && project.ProjectImages.Any())
+                        {
+                            <div id="carousel-@project.Id" class="carousel slide project-carousel" data-bs-ride="carousel">
+                                <div class="carousel-indicators">
+                                    @for (int i = 0; i < project.ProjectImages.Count; i++)
+                                    {
+                                        <button type="button" data-bs-target="#carousel-@project.Id" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : "false")" aria-label="Slide @(i+1)"></button>
+                                    }
+                                </div>
+                                <div class="carousel-inner">
+                                    @for (int i = 0; i < project.ProjectImages.Count; i++)
+                                    {
+                                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                                            <img src="@project.ProjectImages[i].ImagePath" class="d-block w-100" alt="@project.Name">
+                                        </div>
+                                    }
+                                </div>
+                                @if (project.ProjectImages.Count > 1)
+                                {
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel-@project.Id" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Önceki</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel-@project.Id" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Sonraki</span>
+                                    </button>
+                                }
+                                <div class="project-badge position-absolute top-0 end-0 m-2">
+                                    <span class="badge rounded-pill bg-primary">
+                                        <i class="bi bi-award-fill"></i> @project.AverageRating.ToString("F1")/10
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                        else if (!string.IsNullOrEmpty(project.ImagePath))
+                        {
+                            <div class="card-img-container position-relative">
+                                <img src="@project.ImagePath" class="card-img-top" alt="@project.Name">
+                                <div class="project-badge position-absolute top-0 end-0 m-2">
+                                    <span class="badge rounded-pill bg-primary">
+                                        <i class="bi bi-award-fill"></i> @project.AverageRating.ToString("F1")/10
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card-img-container position-relative">
+                                <div class="d-flex align-items-center justify-content-center bg-light h-100">
+                                    <i class="bi bi-code-square text-secondary" style="font-size: 3.5rem;"></i>
+                                </div>
+                                <div class="project-badge position-absolute top-0 end-0 m-2">
+                                    <span class="badge rounded-pill bg-primary">
+                                        <i class="bi bi-award-fill"></i> @project.AverageRating.ToString("F1")/10
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@project.Name</h5>
+                            <p class="card-text text-muted small">@(project.Description?.Length > 120 ? project.Description.Substring(0, 120) + "..." : project.Description)</p>
+                            
+                            <div class="progress-bar-container mb-3 @(project.Evaluations?.Count > 0 ? "has-evaluations" : "")" title="Ortalama Puan: @project.AverageRating.ToString("F1")/10">
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar @(project.Evaluations?.Count > 0 ? "bg-success" : "bg-secondary")" 
+                                         role="progressbar" 
+                                         style="width: @(project.AverageRating * 10)%;" 
+                                         aria-valuenow="@(project.AverageRating * 10)" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <small class="text-muted">@(project.Evaluations?.Count ?? 0) değerlendirme</small>
+                                    <small class="text-muted">@project.CreatedDate.ToString("dd/MM/yyyy")</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a asp-action="Details" asp-route-id="@project.Id" class="btn btn-outline-primary w-100 position-relative">
+                                <i class="bi bi-eye"></i> Detayları Gör ve Değerlendir
+                                <i class="bi bi-arrow-right position-absolute end-0 me-3" style="top: 50%; transform: translateY(-50%);"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Carousel otomatik geçişleri durdurma (mouseover ile)
+        document.addEventListener('DOMContentLoaded', function() {
+            var carousels = document.querySelectorAll('.carousel');
+            carousels.forEach(function(carousel) {
+                carousel.addEventListener('mouseover', function() {
+                    this.setAttribute('data-bs-interval', 'false');
+                });
+                
+                carousel.addEventListener('mouseout', function() {
+                    this.setAttribute('data-bs-interval', '5000');
+                });
+            });
+            
+            // Form doğrulama
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        });
+    </script>
+}

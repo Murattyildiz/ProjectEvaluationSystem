@@ -1,0 +1,788 @@
+@model ProjectEvaluationSystem.Models.Project
+
+@{
+    ViewData["Title"] = "Proje Detayları";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/evaluation.css" asp-append-version="true" />
+    <style>
+        /* Proje detay sayfası özel stilleri */
+        body {
+            background-color: #f8f9fa;
+            background-image: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .page-header {
+            background: linear-gradient(120deg, var(--primary-color), #8338ec);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-detail-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .rating-progress {
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            background-color: #24292e; /* GitHub'ın koyu rengi */
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+            .github-link:hover {
+                background-color: #0366d6; /* GitHub'ın mavi rengi */
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            }
+
+        .content-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: none;
+        }
+
+            .content-card:hover {
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                transform: translateY(-5px);
+            }
+
+        .evaluation-form {
+            transition: all 0.3s ease;
+        }
+
+            .evaluation-form:hover {
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            }
+
+        .project-gallery {
+            margin-bottom: 2rem;
+        }
+
+        .gallery-container {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-main-image {
+            width: 100%;
+            border-radius: 10px;
+            height: 350px;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+
+            .gallery-main-image:hover {
+                transform: scale(1.02);
+            }
+
+        .gallery-thumbnails {
+            display: flex;
+            margin-top: 1rem;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: #3a86ff #f0f0f0;
+        }
+
+            .gallery-thumbnails::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .gallery-thumbnails::-webkit-scrollbar-track {
+                background: #f0f0f0;
+                border-radius: 10px;
+            }
+
+            .gallery-thumbnails::-webkit-scrollbar-thumb {
+                background-color: #3a86ff;
+                border-radius: 10px;
+            }
+
+        .gallery-thumbnail {
+            width: 80px;
+            height: 60px;
+            border-radius: 6px;
+            object-fit: cover;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+            .gallery-thumbnail:hover,
+            .gallery-thumbnail.active {
+                opacity: 1;
+                transform: scale(1.05);
+                box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+                border-color: #3a86ff;
+            }
+
+        .evaluation-item {
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            background-color: white;
+        }
+
+            .evaluation-item:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+
+        /* Puanlama sistemi */
+        .rating-buttons label {
+            transition: all 0.2s ease;
+            border-width: 2px;
+            cursor: pointer;
+        }
+
+            .rating-buttons label:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+            }
+
+        .btn-check:checked + label {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.7);
+        }
+
+        .evaluation-comment {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            font-style: italic;
+            border-left: 4px solid #3a86ff;
+        }
+
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+
+        .project-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .breadcrumb {
+            padding: 10px 15px;
+            background-color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+            border-radius: 50px;
+            display: inline-flex;
+        }
+
+        .project-meta-info {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            margin-top: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            background-color: #f0f8ff;
+            border-radius: 50px;
+        }
+
+            .meta-item i {
+                margin-right: 8px;
+                color: #3a86ff;
+            }
+
+        /* Yeni puanlama sistemi */
+        .rating-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .rating-numbers {
+            padding: 0 10px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .rating-slider {
+            height: 20px;
+            cursor: pointer;
+        }
+
+            .rating-slider::-webkit-slider-thumb {
+                appearance: none;
+                width: 25px;
+                height: 25px;
+                border-radius: 50%;
+                background: #3a86ff;
+                box-shadow: 0 0 10px rgba(58, 134, 255, 0.5);
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+                .rating-slider::-webkit-slider-thumb:hover {
+                    transform: scale(1.2);
+                }
+
+            .rating-slider::-webkit-slider-runnable-track {
+                width: 100%;
+                height: 10px;
+                background: linear-gradient(to right, #ff595e, #ffca3a, #8ac926, #1982c4, #6a4c93);
+                border-radius: 5px;
+            }
+
+        .rating-value-display {
+            margin: 10px 0;
+        }
+
+        .rating-text {
+            font-size: 0.9rem;
+        }
+
+        /* Slayt gösterisi kontrolleri */
+        .slideshow-controls {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            z-index: 10;
+            display: flex;
+            gap: 10px;
+        }
+
+            .slideshow-controls button {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: rgba(255, 255, 255, 0.7);
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                color: #3a86ff;
+                transition: all 0.3s;
+            }
+
+                .slideshow-controls button:hover {
+                    background-color: white;
+                    transform: scale(1.1);
+                }
+
+        .slideshow-indicator {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            z-index: 5;
+        }
+
+        .indicator-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+            .indicator-dot.active {
+                background-color: #3a86ff;
+                transform: scale(1.2);
+            }
+    </style>
+}
+
+<div class="page-header py-4 mb-5">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4 animate__animated animate__fadeIn">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/" class="text-white opacity-75">Ana Sayfa</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">@Model.Name</li>
+            </ol>
+        </nav>
+
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold animate__animated animate__fadeInUp">
+                    @Model.Name
+                </h1>
+                <div class="d-flex align-items-center mt-2 animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+                    <div class="me-3">
+                        <span class="badge bg-light text-primary fs-5 shadow-sm">
+                            <i class="bi bi-star-fill text-warning me-1"></i> @Model.AverageRating.ToString("F1")
+                        </span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.GithubLink))
+                    {
+                        <a href="@Model.GithubLink" target="_blank" class="github-link d-inline-flex align-items-center text-decoration-none">
+                            <i class="bi bi-github fs-5 me-2"></i> <span>GitHub Repo</span>
+                        </a>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <div class="animate__animated animate__fadeInRight">
+                    @if (!string.IsNullOrEmpty(ViewBag.UserFirstName) && !string.IsNullOrEmpty(ViewBag.UserLastName))
+                    {
+                        <div class="user-info alert alert-light mb-3 d-inline-block">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-person-circle fs-4 me-2 text-primary"></i>
+                                <div>
+                                    <span class="fw-bold">@ViewBag.UserFirstName @ViewBag.UserLastName</span>
+                                    <small class="d-block">olarak değerlendirebilirsiniz</small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="content-card p-4 animate__animated animate__fadeIn" style="animation-delay: 0.2s">
+                <!-- Proje Görselleri Galerisi -->
+                @if (Model.ProjectImages != null && Model.ProjectImages.Any())
+                {
+                    <div class="project-gallery mb-4">
+                        <div class="gallery-container">
+                            <img id="mainImage" src="@(Model.ProjectImages.FirstOrDefault(p => p.IsMainImage)?.ImagePath ?? Model.ProjectImages.First().ImagePath)"
+                                 class="gallery-main-image" alt="@Model.Name" />
+
+                            <!-- Slayt gösterisi kontrolleri -->
+                            <div class="slideshow-controls">
+                                <button id="slideshowToggle" title="Otomatik geçişi durdur">
+                                    <i class="bi bi-pause-fill"></i>
+                                </button>
+                            </div>
+
+                            <!-- Gösterge noktaları -->
+                            @if (Model.ProjectImages.Count > 1)
+                            {
+                                <div class="slideshow-indicator">
+                                    @for (int i = 0; i < Model.ProjectImages.Count; i++)
+                                    {
+                                        <div class="indicator-dot @(i == 0 ? "active" : "")"></div>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        @if (Model.ProjectImages.Count > 1)
+                        {
+                            <div class="gallery-thumbnails">
+                                @foreach (var image in Model.ProjectImages.Select((img, index) => new { Image = img, Index = index }))
+                                {
+                                    <img src="@image.Image.ImagePath"
+                                         class="gallery-thumbnail @(image.Image.IsMainImage ? "active" : "")"
+                                         data-src="@image.Image.ImagePath"
+                                         data-index="@image.Index"
+                                         alt="@Model.Name" />
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(Model.ImagePath))
+                {
+                    <div class="project-gallery mb-4">
+                        <div class="gallery-container">
+                            <img src="@Model.ImagePath" class="gallery-main-image" alt="@Model.Name" />
+                        </div>
+                    </div>
+                }
+
+                <!-- Progress Bar Puanlama Gösterimi -->
+                <div class="rating-progress mb-4">
+                    <h5 class="mb-3">Proje Değerlendirmesi</h5>
+                    <div class="progress" style="height: 12px;">
+                        <div class="progress-bar bg-success"
+                             role="progressbar"
+                             style="width: @(Model.AverageRating * 10)%;"
+                             aria-valuenow="@(Model.AverageRating * 10)"
+                             aria-valuemin="0"
+                             aria-valuemax="100">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span class="fs-4 fw-bold">@Model.AverageRating.ToString("F1")</span>
+                            <span class="text-muted">/10</span>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-primary">@Model.Evaluations.Count değerlendirme</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-3 border-start border-primary ps-3" style="border-left-width: 4px !important;">Proje Açıklaması</h5>
+                    <div class="project-description p-3">
+                        @Model.Description
+                    </div>
+                </div>
+
+                <div class="project-meta-info">
+                    <div class="meta-item">
+                        <i class="bi bi-calendar3"></i>
+                        <span>Eklenme: @Model.CreatedDate.ToString("dd MMMM yyyy")</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-people-fill"></i>
+                        <span>@(Model.Contributors?.Count ?? 0) katkıda bulunan</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="mobile-evaluation-container">
+                @if (!string.IsNullOrEmpty(ViewBag.UserFirstName) && !string.IsNullOrEmpty(ViewBag.UserLastName))
+                {
+                    <div class="content-card my-4 overflow-hidden animate__animated animate__fadeIn evaluation-form" id="evaluationForm" style="animation-delay: 0.4s">
+                        <div class="card-header bg-primary text-white py-3">
+                            <h5 class="mb-0"><i class="bi bi-star-fill me-2"></i> Projeyi Değerlendir</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form asp-action="SubmitEvaluation" asp-controller="Home" method="post" class="needs-validation" novalidate>
+                                <input type="hidden" name="projectId" value="@Model.Id" />
+                                <input type="hidden" name="FirstName" value="@ViewBag.UserFirstName" />
+                                <input type="hidden" name="LastName" value="@ViewBag.UserLastName" />
+
+                                <div asp-validation-summary="All" class="text-danger"></div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Puan Verin (1-10)</label>
+                                    <div class="rating-container my-3">
+                                        <div class="star-rating">
+                                            <div class="rating-numbers d-flex justify-content-between mb-2">
+                                                @for (int i = 1; i <= 10; i++)
+                                                {
+                                                    <div class="rating-number">@i</div>
+                                                }
+                                            </div>
+                                            <div class="rating-slider-container">
+                                                <input type="range" class="form-range rating-slider" id="ratingSlider"
+                                                       min="1" max="10" step="1" value="5" required>
+                                            </div>
+                                            <input type="hidden" name="Rating" id="ratingInput" value="5">
+                                            <div class="text-center mt-3">
+                                                <div class="rating-value-display">
+                                                    <span id="ratingValue" class="badge bg-primary fs-5 px-4 py-2">5 / 10</span>
+                                                </div>
+                                                <div class="rating-text mt-2">
+                                                    <span id="ratingDescription" class="text-muted">Orta</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Yorumunuz (İsteğe bağlı)</label>
+                                    <textarea name="Comment" class="form-control" rows="4"
+                                              placeholder="Proje hakkında görüşlerinizi yazabilirsiniz..."></textarea>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary py-2">
+                                        <i class="bi bi-send-fill me-2"></i> Değerlendirmeyi Gönder
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="content-card mb-4 animate__animated animate__fadeIn" style="animation-delay: 0.2s">
+                        <div class="card-body p-4">
+                            <div class="alert alert-warning mb-0">
+                                <div class="d-flex">
+                                    <i class="bi bi-exclamation-triangle-fill fs-3 me-3 text-warning"></i>
+                                    <div>
+                                        <h5 class="alert-heading mb-2">Değerlendirme yapmak için bilgilerinizi girin</h5>
+                                        <p>Projeyi değerlendirebilmek için ana sayfada adınızı ve soyadınızı girmeniz gerekmektedir.</p>
+                                        <a asp-action="Index" class="btn btn-warning w-100">
+                                            <i class="bi bi-person-plus-fill me-2"></i> Bilgilerimi Girmek İçin Ana Sayfaya Dön
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="content-card h-auto animate__animated animate__fadeIn" style="animation-delay: 0.3s">
+                    <div class="card-header bg-info text-white py-3">
+                        <h5 class="mb-0 d-flex align-items-center">
+                            <i class="bi bi-chat-square-text-fill me-2"></i>
+                            <span>Değerlendirmeler</span>
+                            <span class="badge bg-white text-info rounded-pill ms-auto">@Model.Evaluations.Count</span>
+                        </h5>
+                    </div>
+                    <div class="card-body p-3">
+                        @if (!Model.Evaluations.Any())
+                        {
+                            <div class="alert alert-info text-center py-4">
+                                <i class="bi bi-chat-left-text fs-3 d-block mb-3"></i>
+                                <h5>Henüz değerlendirme yapılmamış</h5>
+                                <p class="mb-0">İlk değerlendirmeyi siz yapın!</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="evaluations-list mt-1">
+                                @foreach (var evaluation in Model.Evaluations.OrderByDescending(e => e.EvaluationDate))
+                                {
+                                    <div class="evaluation-item p-3 mb-3 animate__animated animate__fadeIn">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="d-flex align-items-center">
+                                                <div class="evaluation-avatar bg-light rounded-circle d-flex align-items-center justify-content-center me-2"
+                                                     style="width: 40px; height: 40px;">
+                                                    <i class="bi bi-person text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">@evaluation.FirstName @evaluation.LastName</h6>
+                                                    <small class="text-muted d-block">
+                                                        <i class="bi bi-clock"></i> @evaluation.EvaluationDate.ToString("dd.MM.yyyy HH:mm")
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <span class="badge bg-primary rounded-pill fs-6">@evaluation.Rating/10</span>
+                                        </div>
+
+                                        <div class="mt-2">
+                                            <div class="progress" style="height: 5px;">
+                                                <div class="progress-bar bg-success"
+                                                     role="progressbar"
+                                                     style="width: @(evaluation.Rating * 10)%;"
+                                                     aria-valuenow="@(evaluation.Rating * 10)"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        @if (!string.IsNullOrEmpty(evaluation.Comment))
+                                        {
+                                            <p class="my-3 evaluation-comment">@evaluation.Comment</p>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 mb-5 text-center">
+        <a asp-action="Index" class="btn btn-outline-secondary px-4 py-2">
+            <i class="bi bi-arrow-left me-2"></i> Tüm Projelere Dön
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form validasyonu
+            const form = document.querySelector('.needs-validation');
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    if (!this.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+
+                    this.classList.add('was-validated');
+                });
+            }
+
+            // Yeni puanlama sistemi
+            const ratingSlider = document.getElementById('ratingSlider');
+            const ratingInput = document.getElementById('ratingInput');
+            const ratingValue = document.getElementById('ratingValue');
+            const ratingDescription = document.getElementById('ratingDescription');
+
+            if (ratingSlider && ratingInput && ratingValue && ratingDescription) {
+                // Puanlama açıklamaları
+                const ratingDescriptions = {
+                    1: "Çok Kötü",
+                    2: "Kötü",
+                    3: "Vasat",
+                    4: "Orta Altı",
+                    5: "Orta",
+                    6: "Orta Üstü",
+                    7: "İyi",
+                    8: "Çok İyi",
+                    9: "Mükemmel",
+                    10: "Olağanüstü"
+                };
+
+                // Puan renkleri
+                const ratingColors = {
+                    1: "#ff595e", // Kırmızı
+                    2: "#ff595e",
+                    3: "#ffca3a", // Sarı
+                    4: "#ffca3a",
+                    5: "#ffca3a",
+                    6: "#8ac926", // Yeşil
+                    7: "#8ac926",
+                    8: "#1982c4", // Mavi
+                    9: "#1982c4",
+                    10: "#6a4c93" // Mor
+                };
+
+                function updateRating(value) {
+                    const rating = parseInt(value);
+                    ratingInput.value = rating;
+                    ratingValue.textContent = rating + " / 10";
+                    ratingValue.style.backgroundColor = ratingColors[rating];
+                    ratingDescription.textContent = ratingDescriptions[rating];
+                }
+
+                // Başlangıç değerini ayarla
+                updateRating(ratingSlider.value);
+
+                // Slider değeri değişince güncelle
+                ratingSlider.addEventListener('input', function() {
+                    updateRating(this.value);
+                });
+            }
+
+            // Proje fotoğrafları slayt gösterisi
+            const mainImage = document.getElementById('mainImage');
+            const thumbnails = document.querySelectorAll('.gallery-thumbnail');
+            const indicators = document.querySelectorAll('.indicator-dot');
+            const slideshowToggle = document.getElementById('slideshowToggle');
+
+            if (thumbnails.length > 0 && mainImage) {
+                let currentIndex = 0;
+                let isPlaying = true;
+                let slideshowInterval;
+
+                // Tüm resimleri bir dizi olarak al
+                const images = Array.from(thumbnails).map(thumb => ({
+                    src: thumb.getAttribute('data-src'),
+                    index: parseInt(thumb.getAttribute('data-index'))
+                }));
+
+                // Görseli değiştir
+                const changeImage = (index) => {
+                    if (index >= images.length) index = 0;
+                    if (index < 0) index = images.length - 1;
+
+                    currentIndex = index;
+                    mainImage.src = images[index].src;
+
+                    // Thumbnail'ları güncelle
+                    thumbnails.forEach(t => t.classList.remove('active'));
+                    thumbnails[index].classList.add('active');
+
+                    // Göstergeleri güncelle
+                    if (indicators.length > 0) {
+                        indicators.forEach(ind => ind.classList.remove('active'));
+                        indicators[index].classList.add('active');
+                    }
+                };
+
+                // Otomatik slayt gösterisi
+                const startSlideshow = () => {
+                    if (slideshowInterval) clearInterval(slideshowInterval);
+                    slideshowInterval = setInterval(() => {
+                        changeImage(currentIndex + 1);
+                    }, 3000); // 3 saniyede bir değiştir
+                };
+
+                // Slayt gösterisini başlat
+                startSlideshow();
+
+                // Thumbnail tıklama
+                thumbnails.forEach((thumbnail, index) => {
+                    thumbnail.addEventListener('click', function() {
+                        changeImage(index);
+                        // Slayt gösterisini yeniden başlat
+                        if (isPlaying) startSlideshow();
+                    });
+                });
+
+                // Otomatik geçişi durdur/başlat
+                if (slideshowToggle) {
+                    slideshowToggle.addEventListener('click', function() {
+                        isPlaying = !isPlaying;
+
+                        if (isPlaying) {
+                            this.innerHTML = '<i class="bi bi-pause-fill"></i>';
+                            this.title = "Otomatik geçişi durdur";
+                            startSlideshow();
+                        } else {
+                            this.innerHTML = '<i class="bi bi-play-fill"></i>';
+                            this.title = "Otomatik geçişi başlat";
+                            clearInterval(slideshowInterval);
+                        }
+                    });
+                }
+
+                // Göstergelere tıklama
+                if (indicators.length > 0) {
+                    indicators.forEach((indicator, index) => {
+                        indicator.addEventListener('click', function() {
+                            changeImage(index);
+                            // Slayt gösterisini yeniden başlat
+                            if (isPlaying) startSlideshow();
+                        });
+                    });
+                }
+            }
+
+            // Değerlendirme kartları için hover animasyonu
+            const evaluationItems = document.querySelectorAll('.evaluation-item');
+            if (evaluationItems.length > 0) {
+                evaluationItems.forEach((item, index) => {
+                    item.style.animationDelay = `${0.1 * (index + 1)}s`;
+                });
+            }
+        });
+    </script>
+}

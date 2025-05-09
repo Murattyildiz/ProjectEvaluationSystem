@@ -1,0 +1,118 @@
+@model IEnumerable<ProjectEvaluationSystem.Models.Contributor>
+
+@{
+    ViewData["Title"] = "Katkıda Bulunanlar";
+    var currentPage = ViewBag.CurrentPage;
+    var totalPages = ViewBag.TotalPages;
+    var projectId = ViewBag.ProjectId;
+    var projects = ViewBag.Projects as IEnumerable<ProjectEvaluationSystem.Models.Project>;
+}
+
+<div class="container-fluid py-4">
+    <div class="card">
+        <div class="card-header bg-white py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="m-0">Katkıda Bulunanlar</h5>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-md-end">
+                        <form asp-action="Contributors" method="get" class="d-flex gap-2">
+                            <select name="projectId" class="form-select" onchange="this.form.submit()">
+                                <option value="">Tüm Projeler</option>
+                                @foreach (var project in projects)
+                                {
+                                    <option value="@project.Id" selected="@(project.Id == projectId)">@project.Name</option>
+                                }
+                            </select>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i> Henüz hiç katkıda bulunan yok.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Ad Soyad</th>
+                                <th>E-posta</th>
+                                <th>Proje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var contributor in Model)
+                            {
+                                <tr>
+                                    <td>@contributor.FirstName @contributor.LastName</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(contributor.Email))
+                                        {
+                                            <a href="mailto:@contributor.Email" class="text-decoration-none">
+                                                <i class="bi bi-envelope me-1"></i>@contributor.Email
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@contributor.ProjectId" class="text-decoration-none">
+                                            @contributor.Project.Name
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (totalPages > 1)
+                {
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted">
+                            Sayfa @currentPage / @totalPages
+                        </div>
+                        <nav>
+                            <ul class="pagination mb-0">
+                                @if (currentPage > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" asp-action="Contributors" asp-route-page="@(currentPage - 1)" asp-route-projectId="@projectId">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                }
+
+                                @for (int i = 1; i <= totalPages; i++)
+                                {
+                                    <li class="page-item @(i == currentPage ? "active" : "")">
+                                        <a class="page-link" asp-action="Contributors" asp-route-page="@i" asp-route-projectId="@projectId">@i</a>
+                                    </li>
+                                }
+
+                                @if (currentPage < totalPages)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" asp-action="Contributors" asp-route-page="@(currentPage + 1)" asp-route-projectId="@projectId">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div> 

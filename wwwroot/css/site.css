@@ -1,0 +1,605 @@
+/* === ROOT VARIABLES === */
+:root {
+  --primary-color: #3a86ff;
+  --primary-color-alt: #0a5ecc;
+  --secondary-color: #ff5a5f;
+  --accent-color: #8338ec;
+  --success-color: #38b000;
+  --warning-color: #ffbe0b;
+  --danger-color: #e63946;
+  --dark-color: #212529;
+  --light-color: #f8f9fa;
+  --gray-color: #6c757d;
+  --white-color: #ffffff;
+  
+  --shadow-small: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.15);
+  --shadow-large: 0 10px 25px rgba(0, 0, 0, 0.2);
+  
+  --transition-fast: all 0.2s ease;
+  --transition-normal: all 0.3s ease;
+  --transition-slow: all 0.5s ease;
+  
+  --border-radius-small: 4px;
+  --border-radius-normal: 8px;
+  --border-radius-large: 16px;
+  --border-radius-xl: 24px;
+  --border-radius-circle: 50%;
+}
+
+/* === BASE STYLES === */
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Roboto', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--dark-color);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #1a365d, #2d3748);
+  background-attachment: fixed;
+}
+
+main {
+  flex: 1;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4ecfb 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+a:hover {
+  color: var(--primary-color-alt);
+}
+
+/* === UTILITIES === */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-color-alt));
+}
+
+.bg-gradient-accent {
+  background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.shadow-hover {
+  transition: var(--transition-normal);
+}
+
+.shadow-hover:hover {
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-5px);
+}
+
+.rounded-custom {
+  border-radius: var(--border-radius-normal);
+}
+
+/* === LAYOUT === */
+.container-custom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.section-padding {
+  padding: 5rem 0;
+}
+
+.section-margin {
+  margin: 5rem 0;
+}
+
+/* === NAVBAR === */
+header {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.navbar {
+  padding: 1rem 0;
+  transition: var(--transition-fast);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+.navbar-brand span {
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.navbar-brand img {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.nav-link {
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  border-radius: var(--border-radius-small);
+  margin: 0 0.2rem;
+  transition: var(--transition-fast);
+}
+
+.nav-link:hover {
+  background-color: rgba(58, 134, 255, 0.1);
+  color: var(--primary-color) !important;
+}
+
+.nav-link.active {
+  background-color: var(--primary-color);
+  color: white !important;
+}
+
+/* === CARDS === */
+.card {
+  border: none;
+  border-radius: var(--border-radius-normal);
+  overflow: hidden;
+  box-shadow: var(--shadow-small);
+  transition: var(--transition-normal);
+  height: 100%;
+  background: var(--white-color);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-5px);
+}
+
+.card-img-top {
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--dark-color);
+}
+
+.card-text {
+  color: var(--gray-color);
+}
+
+/* === BUTTONS === */
+.btn {
+  font-weight: 500;
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--border-radius-small);
+  transition: var(--transition-fast);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-color-alt);
+  border-color: var(--primary-color-alt);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(58, 134, 255, 0.3);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.btn-secondary:hover {
+  background-color: #e1484d;
+  border-color: #e1484d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 90, 95, 0.3);
+}
+
+.btn-accent {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+}
+
+.btn-accent:hover {
+  background-color: #722bd2;
+  border-color: #722bd2;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(131, 56, 236, 0.3);
+}
+
+.btn-outline-primary {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-color);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* === FORMS === */
+.form-control {
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius-small);
+  border: 1px solid #ced4da;
+  transition: var(--transition-fast);
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.25rem rgba(58, 134, 255, 0.25);
+  border-color: var(--primary-color);
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+/* === FOOTER === */
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: var(--white-color);
+  padding: 1rem 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.footer a {
+  color: var(--primary-color);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  
+  .card-img-top {
+    height: 180px;
+  }
+  
+  .section-padding {
+    padding: 3rem 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar-brand {
+    font-size: 1.25rem;
+  }
+  
+  .navbar-brand img {
+    height: 30px;
+  }
+  
+  .btn {
+    padding: 0.4rem 1.2rem;
+  }
+}
+
+/* Animasyonlar */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Bildirimler */
+.notification {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1060;
+  max-width: 350px;
+  border-radius: var(--border-radius-small);
+  box-shadow: var(--shadow-medium);
+  animation: fadeIn 0.3s ease;
+}
+
+/* Proje Kartları özel stilleri */
+.project-card .card-img-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  transition: var(--transition-normal);
+}
+
+.project-card:hover .card-img-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 100%);
+}
+
+.project-rating-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius-small);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.project-card .card-img-overlay h5,
+.project-card .card-img-overlay p {
+  color: white;
+  margin: 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* rating-stars için yeni stil */
+.rating-stars {
+  color: var(--warning-color);
+  display: inline-flex;
+}
+
+.rating-stars .bi-star-fill,
+.rating-stars .bi-star-half,
+.rating-stars .bi-star {
+  margin-right: 2px;
+}
+
+/* Admin panel özellikleri */
+.admin-sidebar {
+  position: sticky;
+  top: 1rem;
+  padding: 1.5rem;
+  border-radius: var(--border-radius-normal);
+  background-color: white;
+  box-shadow: var(--shadow-small);
+}
+
+.admin-sidebar .nav-link {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: var(--border-radius-small);
+  transition: var(--transition-fast);
+}
+
+.admin-sidebar .nav-link:hover {
+  background-color: rgba(58, 134, 255, 0.1);
+}
+
+.admin-sidebar .nav-link.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.admin-card {
+  background-color: white;
+  border-radius: var(--border-radius-normal);
+  box-shadow: var(--shadow-small);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-card h4 {
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 0.5rem;
+}
+
+/* Login formu özel stili */
+.login-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: var(--border-radius-normal);
+  box-shadow: var(--shadow-medium);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-header h2 {
+  color: var(--primary-color);
+}
+
+.login-header .bi {
+  font-size: 3rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.login-form .form-floating {
+  margin-bottom: 1rem;
+}
+
+.login-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+/* Project Detail Header */
+.project-detail-header {
+  background: linear-gradient(135deg, #1a365d, #2d3748);
+  color: white;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: var(--border-radius-normal);
+  box-shadow: var(--shadow-medium);
+}
+
+.project-detail-header h1 {
+  color: white;
+  font-size: 2.5rem;
+  margin-bottom: 0;
+}
+
+.project-detail-header .breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.project-detail-header .breadcrumb-item,
+.project-detail-header .breadcrumb-item a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+}
+
+.project-detail-header .breadcrumb-item.active {
+  color: white;
+}
+
+.project-detail-header .breadcrumb-item + .breadcrumb-item::before {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.project-detail-header .project-rating {
+  background: white;
+  color: var(--dark-color);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-normal);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.project-detail-image {
+  border-radius: var(--border-radius-normal);
+  box-shadow: var(--shadow-medium);
+}
+
+.project-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.project-meta .rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--warning-color);
+  color: var(--dark-color);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--border-radius-small);
+  font-weight: 600;
+}
+
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--dark-color);
+  background-color: #f1f1f1;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--border-radius-small);
+  transition: var(--transition-fast);
+}
+
+.github-link:hover {
+  background-color: #e2e2e2;
+}
+
+.evaluation-section {
+  background-color: var(--white-color);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--border-radius-normal);
+  box-shadow: var(--shadow-small);
+}
+
+.evaluation-item {
+  background-color: var(--light-color);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--border-radius-small);
+  border: 1px solid var(--light-color);
+}
+
+.evaluation-author {
+  color: var(--dark-color);
+  font-weight: 600;
+}
+
+.evaluation-date {
+  color: var(--gray-color);
+}
+
+.evaluation-rating {
+  margin-bottom: 0.5rem;
+}
+
+/* Rating form */
+.rating-input {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.rating-input input {
+  display: none;
+}
+
+.rating-input label {
+  cursor: pointer;
+  font-size: 1.75rem;
+  color: #ddd;
+  padding: 0 0.1rem;
+  transition: var(--transition-fast);
+}
+
+.rating-input label:hover,
+.rating-input label:hover ~ label,
+.rating-input input:checked ~ label {
+  color: var(--warning-color);
+}
+
+.rating-input:hover label {
+  transform: rotate(-15deg) scale(1.1);
+}
