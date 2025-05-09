@@ -9,12 +9,20 @@
     <style>
         /* Proje detay sayfası özel stilleri */
         body {
-            background-color: #f8f9fa;
-            background-image: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: linear-gradient(135deg, #1a365d, #2d3748);
+            background-attachment: fixed;
+        }
+
+        main {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4ecfb 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            width: 100%;
+            padding: 20px 0;
         }
 
         .page-header {
-            background: linear-gradient(120deg, var(--primary-color), #8338ec);
+            background: linear-gradient(135deg, #1a365d, #2d3748) !important;
             color: white;
             padding: 2rem 0;
             margin-bottom: 2rem;
@@ -91,14 +99,14 @@
         .gallery-main-image {
             width: 100%;
             border-radius: 10px;
-            height: 350px;
+            height: 420px;
             object-fit: cover;
             transition: all 0.5s ease;
         }
 
-            .gallery-main-image:hover {
-                transform: scale(1.02);
-            }
+        .gallery-main-image:hover {
+            transform: scale(1.02);
+        }
 
         .gallery-thumbnails {
             display: flex;
@@ -324,6 +332,19 @@
                 background-color: #3a86ff;
                 transform: scale(1.2);
             }
+
+        /* Mobil için galeri ana resim yüksekliği */
+        @@media (max-width: 768px) {
+            .gallery-main-image {
+                height: 300px;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .gallery-main-image {
+                height: 250px;
+            }
+        }
     </style>
 }
 
